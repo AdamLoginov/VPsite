@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <form method="POST" action="{% url 'companyCreate' %}">
+            {% csrf_token %}
+            <p>
+                <label>Введите название организации</label><br>
+                <input type="text" name="name" />
+            </p>
+            <input type="submit" value="Создать" >
+        </form>
+    </div>
+
+    {% for item in company %}
+        <p>
+            {{item}} <a href="{% url 'companyEit' item.id %}">Изменить</a> | <a href="{% url 'companyDelete' item.id %}">Удалить</a>
+        </p>
+    {% endfor %}
+
+{% endblock %}

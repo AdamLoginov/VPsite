@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Профиль</h2>
+    <p>Логин: {{user.username}}</p>
+    <h2>Записи</h2>
+    {% for item in user.database_key.all %}
+        <a href='{% url "baseDetail" item.id %}'><p>{{item.title}}</p></a>
+    {% endfor %}
+{% endblock %}
