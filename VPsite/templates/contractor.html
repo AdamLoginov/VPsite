@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Create new contractor</h1>
+    <div class="container">
+        <form method="POST" action="{% url 'contractorCreate' %}">
+            {% csrf_token %}
+            <p>
+                <label>Введите название организации</label><br>
+                <input type="text" name="name" />
+            </p>
+            <p>
+                <label>КОД</label><br>
+                <input type="text" name="cod" />
+            </p>
+            <p>
+                <label>ИНН</label><br>
+                <input type="text" name="inn" />
+            </p>
+            <p>
+                <label>КПП</label><br>
+                <input type="text" name="kpp" />
+            </p>
+            <input type="submit" value="Создать" >
+        </form>
+    </div>
+    <h2>Contractors</h2>
+    {% for contractor in contractors %}
+        <p>{{contractor}}</p>
+    {% endfor %}
+{% endblock %}

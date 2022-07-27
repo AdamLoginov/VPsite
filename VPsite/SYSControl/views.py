@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import  (
     HeadDataBase, 
     Company,
+    Сontractor
 )
 
 User = get_user_model()
@@ -63,6 +64,37 @@ class CompanyView(LoginRequiredMixin, View):
             return HttpResponseRedirect('/company')
         else:
             return HttpResponseRedirect('errorPage.html')
+
+class СontractorView(LoginRequiredMixin, View):
+    def get(self, request):
+        if request.user.is_superuser:
+            model = Сontractor.objects.all()
+            return render(request, 'contractor.html', {'contractors': model})
+        else:
+            return HttpResponseRedirect('errorPage.html')
+
+    def create(request):
+        if request.user.is_superuser:
+            if request.method == 'POST':
+                model = Сontractor()
+                model.name = request.POST.get('name')
+                model.cod = request.POST.get('cod')
+                model.inn = request.POST.get('inn')
+                model.kpp = request.POST.get('kpp')
+                model.save()
+            return HttpResponseRedirect('/contractor')
+        else:
+            return HttpResponseRedirect('errorPage.html')
+    
+    def edit(request, id):
+        if request.user.is_superuser:
+            model = Сontractor.objects.get(id=id)
+            if request.method == 'POST':
+                pass
+        else:
+            return HttpResponseRedirect('errorPage.html')
+
+
 
 
 class StaffView(LoginRequiredMixin, View):

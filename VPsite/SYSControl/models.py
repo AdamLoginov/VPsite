@@ -16,7 +16,7 @@ class Company(models.Model):
 class Сontractor(models.Model):
     name = models.CharField(max_length=100, verbose_name='Организация')
     cod = models.CharField(max_length=10, verbose_name='Код')
-    iin = models.CharField(max_length=12, verbose_name='ИНН')
+    inn = models.CharField(max_length=12, verbose_name='ИНН')
     kpp = models.CharField(max_length=9, verbose_name='КПП')
 
     def __str__(self):
