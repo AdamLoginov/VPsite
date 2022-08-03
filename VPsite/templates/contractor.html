@@ -26,6 +26,6 @@
     </div>
     <h2>Contractors</h2>
     {% for contractor in contractors %}
-        <p>{{contractor}}</p>
+        <p>{{contractor}} <a href="{% url 'contractorEdit' contractor.id %}">Изменить</a> | <a href="{% url 'contractorDelete' contractor.id %}">Удалить</a></p>
     {% endfor %}
 {% endblock %}

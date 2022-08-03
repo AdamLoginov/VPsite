@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Create configuration</h2>
+    <form method="POST" action="{% url 'configurationCreate' %}">
+        {% csrf_token %}
+        <p>
+            <label>Наименование</label>
+            <input type="text" name="name">
+        </p>
+
+        <input type="submit" value="Создать">
+    </form>
+
+    <h2>Configurations</h2>
+    {% for configuration in configurations %}
+    <p>{{configuration.name}} <a href="{% url 'configurationEdit' configuration.id %}">Изменить</a> | <a href="{% url 'configurationDelete' configuration.id %}">Удалить</a></p>
+    {% endfor %}
+
+{% endblock %}

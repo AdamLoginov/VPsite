@@ -2,13 +2,48 @@
 
 {% block content %}
 
-    <h1>Staff</h1>
-    {% for user in users %}
-        <a href="{{user.username}}"> {{user}}</a>
-    {% endfor %}
+
 
     <h2>Sign up</h2>
-    <form method="post">
+
+    <form method="POST" action="{% url 'staffCreate' %}">
+      {% csrf_token %}
+
+      <p>
+        <label>User name</label><br>
+        <input type="text" name="username">
+      </p>
+
+      <p>
+        <label>First name</label><br>
+        <input type="text" name="nameFirst">
+      </p>
+
+      <p>
+        <label>Last name</label><br>
+        <input type="text" name="nameLast">
+      </p>
+
+      <p>
+        <label>Email</label><br>
+        <input type="text" name="email">
+      </p>
+
+      <p>
+        <label>Password</label><br>
+        <input type="text" name="password">
+      </p>
+
+      <input type="submit" value="Создать">
+
+    </form>
+
+    <h1>Staff</h1>
+    {% for user in users %}
+        <p><a href="{{user.username}}"> {{user}}</a> <a href="{% url 'staffChangePassword' user.id %}">Изменить пароль</a> </p>
+    {% endfor %}
+
+    <!-- <form method="post">
         {% csrf_token %}
         {% for field in form %}
           <p>
@@ -23,6 +58,6 @@
           </p>
         {% endfor %}
         <button type="submit">Sign up</button>
-      </form>
+      </form> -->
 
 {% endblock %}  
