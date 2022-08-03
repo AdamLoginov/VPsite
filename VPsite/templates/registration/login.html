@@ -20,16 +20,16 @@
             <div class="card-body p-5 text-center">
               {% if form.errors %}
               <p>Your username and password didn't match. Please try again.</p>
-            {% endif %}
-          
-            {% if next %}
-              {% if user.is_authenticated %}
-                <p>Your account doesn't have access to this page. To proceed,
-                please login with an account that has access.</p>
-              {% else %}
-                <p>Please login to see this page.</p>
               {% endif %}
-            {% endif %}
+            
+              {% if next %}
+                {% if user.is_authenticated %}
+                  <p>Your account doesn't have access to this page. To proceed,
+                  please login with an account that has access.</p>
+                {% else %}
+                  <p>Please login to see this page.</p>
+                {% endif %}
+              {% endif %}
   
               <h3 class="mb-5">Авторизация</h3>
               
@@ -37,13 +37,11 @@
                 {% csrf_token %}
 
                 <p>
-                  <label>Имя пользователя</label><br>
-                  {{form.username}}
+                  <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" id="id_username" placeholder="Username">
                 </p>
 
                 <p>
-                  <label>Пароль</label><br>
-                  {{form.password}}
+                  <input type="password" name="password" autocomplete="current-password" required="" id="id_password" placeholder="Password">
                 </p>
                 
                 
