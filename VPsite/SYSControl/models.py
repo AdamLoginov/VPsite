@@ -56,5 +56,6 @@ class EnteryDataBase(models.Model):
 
 
 
+
     
 

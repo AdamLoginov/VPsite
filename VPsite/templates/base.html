@@ -1,7 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,19 +11,17 @@
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <style type="text/css">/* Chart.js */
-        @keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}</style>
 
     <title>Document</title>
 </head>
-<body>
+<body class="bg-light">
     
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">Company name</a>
       <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Поиск" aria-label="Search">
+      <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Поиск" aria-label="">
       <div class="navbar-nav">
         <div class="nav-item text-nowrap">
           <a class="nav-link px-3" href="/accounts/logout/">Выход
@@ -33,43 +31,44 @@
     </header>
     
     <div class="container-fluid">
-      <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" style="">
+      <div class="row d-flex justify-content-center">
+        {% if request.user.is_superuser %}
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" >
           <div class="position-sticky pt-3 sidebar-sticky">
             <ul class="nav flex-column">
 
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'base' %}">
+                <a class="nav-link {% if request.path == '/' %}active{% endif %} " aria-current="page" href="{% url 'base' %}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home align-text-bottom" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                   Данные
                 </a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'company' %}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
-                  Компании
-                </a>
-              </li>
-
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'staff' %}">
+                <a class="nav-link {% if '/staff/' in request.path%}active{% endif %}" href="{% url 'staff' %}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users align-text-bottom" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                   Персонал
                 </a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'configuration' %}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2 align-text-bottom" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                  Конфигурации
+                <a class="nav-link {% if '/company/' in request.path %}active{% endif %}" href="{% url 'company' %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                  Компании
                 </a>
               </li>
 
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'contractor' %}">
+              <li class="nav-item ">
+                <a class="nav-link {% if '/contractor/' in  request.path %}active{% endif %}" href="{% url 'contractor' %}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers align-text-bottom" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                   Контрагенты
+                </a>
+              </li>              
+
+              <li class="nav-item">
+                <a class="nav-link {% if '/configuration/' in request.path %}active{% endif %}" href="{% url 'configuration' %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2 align-text-bottom" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                  Конфигурации
                 </a>
               </li>
 
@@ -77,245 +76,418 @@
     
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
               <span>Last change</span>
-              <a class="link-secondary" href="#" aria-label="Add a new report">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle align-text-bottom" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-              </a>
+
             </h6>
             <ul class="nav flex-column mb-2">
                 <!-- вносить последние изменения в базе данных  -->
               <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text align-text-bottom" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  Current month
-                </a>
+                {% if 'detail' in request.path or 'filter' in request.path %}
+                  {% for item in data_lastChange %}
+                    <a class="nav-link" href="{% url 'baseDetail' item.id %}">
+                      <div class="d-flex justify-content-between">
+                        <span>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text align-text-bottom" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                          <span style="font-size:.9rem">@{{item.user.username}}</span>
+                        </span>
+                        <span style="font-size:.8rem">{{item.date|date:"d.m.Y"}}</span>
+                      </div>
+                    </a>
+                  {% endfor %}
+                {% else %}
+                  {% for item in data|slice:":5" %}
+                    <a class="nav-link" href="{% url 'baseDetail' item.id %}">
+                      <div class="d-flex justify-content-between">
+                        <span>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text align-text-bottom" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                          <span style="font-size:.9rem">@{{item.user.username}}</span>
+                        </span>
+                        <span style="font-size:.8rem">{{item.date|date:"d.m.Y"}}</span>
+                      </div>
+                    </a>
+                  {% endfor %}
+                {% endif %}
+
               </li>
 
             </ul>
+
           </div>
         </nav>
+        {% endif %}
     
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-          
+        <main class="{% if request.user.is_superuser %}col-md-9 col-lg-10 {% else %} col-12{% endif %} ms-sm-auto bg-light  px-md-4 mainBase">
           {% block content %}
           
+          <!-- заголовок создания -->
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">Данные</h1>
 
             <div class="btn-toolbar mb-2 mb-md-0">
 
               <div class="btn-group me-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-target="#collapseExample">Создать</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#fromHeadBase">Создать</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary">Выгрузить</button>
               </div>
-
-              <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar align-text-bottom" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                Неделя
-              </button>
+              
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filter">Фильтр</button>
 
             </div>
           </div>
 
-          <div class="collapse">
+          <div class="collapse" id="filter">
+            <div class="card card-body">
+              <form method="POST" action="{% url 'filter' %}">
+                {% csrf_token %}
+                <div class="d-flex">
 
+                  <select class="form-select input-sm mr-2" id ="select-company" name="company">
+                    <option value="null" selected hidden>Компании</option>
+                    {% for item in company %}
+                      <option value="{{item.id}}">{{item.name}}</option>
+                    {% endfor %}
+                  </select>
+
+                  <select class="form-select input-sm mr-2" name="user">
+                    <option value="null" selected hidden>Пользователи</option>
+                    {% for item in users %}
+                    <option value="{{item.id}}">{{item.username}}</option>
+                    {% endfor %}
+                  </select>
+
+                  <select class="form-select input-sm mr-2" name="date">
+                    <option value="7">Неделя</option>
+                    <option value="30">Месяц</option>
+                    <option value="180">6 Месяцев</option>
+                    <option value="null" selected>Все время</option>
+                  </select>
+
+                  <button type="submit" class="btn btn-outline-secondary btn-sm">Применить</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- конец заголовка создания -->
+
+          <div class="collapse" id="fromHeadBase">
+            <div class="card card-body">
+              <form method="POST" action="{% url 'headCreate' %}">
+                {% csrf_token %}
+                <div class="row align-items-center">
+
+                  <div class="col-sm-3 my-1">
+                    <input type="text" class="form-control input-sm"  value = "{{date}}" disabled>
+                  </div>
+
+                  <div class="col-sm-3 my-1">
+                    <input type="text" class="form-control input-sm"  value="{{user}}" disabled>
+                  </div>
+
+                  <div class="col-sm-3 my-1">
+                    <select class="form-select mr-sm-2 input-sm" name="company">
+                      {% for item in company %}
+                        {% if item.first %}
+                          <option value="{{item.id}}" selected>{{item.name}}</option>
+                        {% else %}
+                          <option value="{{item.id}}">{{item.name}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="col-auto my-1">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="dictance">
+                      <label class="form-check-label" for="autoSizingCheck2"> Удаленно </label>
+                    </div>
+                  </div>
+                  <div class="col-auto my-1">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Сохранить</button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
 
-          <div class="formHeadBase-close">
-            <h4>Привет</h4>
-          </div>
-    
           
-          <div class="table-responsive">
-            <table class="table table-striped table-sm">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Header</th>
-                  <th scope="col">Header</th>
-                  <th scope="col">Header</th>
-                  <th scope="col">Header</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1,001</td>
-                  <td>random</td>
-                  <td>data</td>
-                  <td>placeholder</td>
-                  <td>text</td>
-                </tr>
-                <tr>
-                  <td>1,002</td>
-                  <td>placeholder</td>
-                  <td>irrelevant</td>
-                  <td>visual</td>
-                  <td>layout</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>data</td>
-                  <td>rich</td>
-                  <td>dashboard</td>
-                  <td>tabular</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>information</td>
-                  <td>placeholder</td>
-                  <td>illustrative</td>
-                  <td>data</td>
-                </tr>
-                <tr>
-                  <td>1,004</td>
-                  <td>text</td>
-                  <td>random</td>
-                  <td>layout</td>
-                  <td>dashboard</td>
-                </tr>
-                <tr>
-                  <td>1,005</td>
-                  <td>dashboard</td>
-                  <td>irrelevant</td>
-                  <td>text</td>
-                  <td>placeholder</td>
-                </tr>
-                <tr>
-                  <td>1,006</td>
-                  <td>dashboard</td>
-                  <td>illustrative</td>
-                  <td>rich</td>
-                  <td>data</td>
-                </tr>
-                <tr>
-                  <td>1,007</td>
-                  <td>placeholder</td>
-                  <td>tabular</td>
-                  <td>information</td>
-                  <td>irrelevant</td>
-                </tr>
-                <tr>
-                  <td>1,008</td>
-                  <td>random</td>
-                  <td>data</td>
-                  <td>placeholder</td>
-                  <td>text</td>
-                </tr>
-                <tr>
-                  <td>1,009</td>
-                  <td>placeholder</td>
-                  <td>irrelevant</td>
-                  <td>visual</td>
-                  <td>layout</td>
-                </tr>
-                <tr>
-                  <td>1,010</td>
-                  <td>data</td>
-                  <td>rich</td>
-                  <td>dashboard</td>
-                  <td>tabular</td>
-                </tr>
-                <tr>
-                  <td>1,011</td>
-                  <td>information</td>
-                  <td>placeholder</td>
-                  <td>illustrative</td>
-                  <td>data</td>
-                </tr>
-                <tr>
-                  <td>1,012</td>
-                  <td>text</td>
-                  <td>placeholder</td>
-                  <td>layout</td>
-                  <td>dashboard</td>
-                </tr>
-                <tr>
-                  <td>1,013</td>
-                  <td>dashboard</td>
-                  <td>irrelevant</td>
-                  <td>text</td>
-                  <td>visual</td>
-                </tr>
-                <tr>
-                  <td>1,014</td>
-                  <td>dashboard</td>
-                  <td>illustrative</td>
-                  <td>rich</td>
-                  <td>data</td>
-                </tr>
-                <tr>
-                  <td>1,015</td>
-                  <td>random</td>
-                  <td>tabular</td>
-                  <td>information</td>
-                  <td>text</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          
+          {% for item in data %}
+            <div class="my-3 p-3 bg-body rounded shadow-sm">
+              <div class="row border-bottom base-head pb-1 align-items-center">
+                <div class="col-2">@{{item.user}}</div>
+                <div class="col-2">{{item.date|date:"d.m.Y"}}</div>
+                <div class="col-2">{{item.company}}</div>
+                <div class="col-2">{% if item.distance %}Удаленно{% else %}Очно{% endif %}</div>
+                <div class="col-4 text-end">
+                  {% if item == data_edit %}
+                    <div class="btn-group me-3 ">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#createEntery{{item.id}}">Добавить</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#editHeadBase{{item.id}}">Изменить</button>
+                      <a href="{% url 'headDelete' item.id %}" type="button" class="btn btn-sm btn-outline-secondary">Удалить</a>
+                    </div>
+                  {% elif not 'detail' in request.path %}
+                    <div class="btn-group me-3 ">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#watch{{item.id}}" id="btn-onClick" onclick="this.classList.toggle('active')" >
+                      </button>
+                    </div>  
+                  {% endif %}
+                </div>
+              </div>
+              <!-- edit headBase -->
+              {% if item == data_edit %}
+                <div class="collapse" id="editHeadBase{{item.id}}">
+                  <div class="container">
 
-          {% endblock %}
+                    <form method="POST" action="{% url 'headEdit' item.id%}">
+                      {% csrf_token %}
+                      <div class="row align-items-center">
+      
+                        <div class="col-sm-3 my-1">
+                          <input type="text" class="form-control input-sm"  value = "{{item.user}}" disabled>
+                        </div>
+      
+                        <div class="col-sm-3 my-1">
+                          <input type="text" class="form-control input-sm"  value="{{item.date}}" disabled>
+                        </div>
+      
+                        <div class="col-sm-3 my-1">
+                          <select class="form-select mr-sm-2 input-sm" name="company">
+                            {% for itemComp in company %}
+                              {% if itemComp == item.company %}
+                                <option value="{{itemComp.id}}" selected>{{itemComp.name}}</option>
+                              {% else %}
+                                <option value="{{itemComp.id}}">{{itemComp.name}}</option>
+                              {% endif %}
+                            {% endfor %}
+                          </select>
+                        </div>
+      
+                        <div class="col-auto my-1">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="dictance" {% if item.distance %}checked{% endif %}>
+                            <label class="form-check-label" for="autoSizingCheck2"> Удаленно </label>
+                          </div>
+                        </div>
+                        <div class="col-auto my-1">
+                          <button type="submit" class="btn btn-outline-secondary btn-sm">Сохранить</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              {% endif %}
+              <!-- end edit headBase -->
+
+              <!-- create entery -->
+              {% if item == data_edit %}
+                <div class="collapse" id="createEntery{{item.id}}">
+                  <div class="{% if request.user.is_superuser %}container{% else %} mr-5 ml-5 {% endif %}">
+                    <form method="POST" action="{% url 'enteryCreate' item.id %}">{% csrf_token %}
+
+                      <div class="row rowAddEntery">
+                        <div class="col">
+                            <input type="time" class="form-control input-sm" id="timeStart" name="timeStart" required>
+                        </div>
+
+                        <div class="col">
+                          <input type="time" class="form-control input-sm" id="timeEnd" name="timeEnd">
+                        </div>
+
+                        <div class="col">
+                          <input type="number" step="0.5" min="0" class="form-control input-sm" name="hourForPay" placeholder="Часов к оплате">
+                        </div>
+
+                        <div class="col">
+                          <select class="form-select mr-sm-2 input-sm" name="contractor">
+                            <option value=""disabled selected hidden>Контрагент</option>
+                            {% for contractor in contractors %}
+                              <option value="{{contractor.id}}" >{{contractor.name}}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+
+                        <div class="col">
+                          <select class="form-select mr-sm-2 input-sm" name="configuration">
+                            <option value=""disabled selected hidden>Конфигурация</option>
+                            {% for configuration in configurations %}
+                              <option value="{{configuration.id}}" >{{configuration.name}}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+
+                      </div>
+
+                      <div class="row rowAddEntery">
+                        <div class="col">
+                          <textarea class="form-control input-sm" name="descriptionForClient" placeholder="Описание для клиента" rows="4" style="resize: none"></textarea>
+                        </div>
+
+                        <div class="col">
+                          <textarea class="form-control input-sm" name="descriptionNotForClient" placeholder="Описание не для клиента" rows="4" style="resize: none"></textarea>
+                        </div>
+
+                      </div>
+
+                      <div class="row rowAddEntery ">
+                        <div class="d-flex justify-content-end">
+                          <button type="submit" class="btn btn-outline-secondary btn-sm">Сохранить</button>
+                        </div>
+                          
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              {% endif %}
+              <!-- end create entery -->
+              
+              <!-- all entery -->
+              {% if item != data_edit and not 'detail' in request.path %} 
+                <div class="collapse" id="watch{{item.id}}">
+              {% endif %}
+                
+                <div class="enteryContent">
+                  <div class="{% if request.user.is_superuser %}container{% else %} mr-5 ml-5 {% endif %}">
+                  
+                    {% for entery in item.EnteryDataBase_key.all|dictsortreversed:"id"%}
+                      <div class="row">
+                        <div class="col-md-1">
+
+                          <div class="row">
+                            <p class="p-table">{{entery.timeStart|time:'H:i'}}</p>
+                          </div>
+
+                          <div class="row">
+                            <p class="p-table">{{entery.timeEnd|time:'H:i'}}</p>
+                          </div>
+
+                          <div class="row">
+                            <p class="p-table">{{entery.hourForPay}} ч.</p>
+                          </div>
+
+                        </div>
+                        <div class="col-md-2">
+
+                          <div class="row">
+                            <p class="p-table">{{entery.contractor.name}}</p>
+                            
+                          </div>
+
+                          <div class="row">
+                            <p class="p-table">{{entery.configuration.name}}</p>
+                          </div>
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <p>{{entery.descriptionForClient}}</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <p>{{entery.descriptionNotForClient}}</p>
+                        </div>
+
+                        <div class="col-md-1 my-auto">
+                          {% if item == data_edit %}
+                            <div class="btn-group-vertical me-2">
+                              <button type="button" class="btn btn-sm btn-outline-secondary btn-sbn" data-bs-toggle="collapse" data-bs-target="#editEntery{{entery.id}}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                </svg>
+                              </button>
+                              <a href="{% url 'enteryDelete' entery.id %}" type="button" class="btn btn-sm btn-outline-secondary btn-sbn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
+                                </svg>
+                              </a>
+                            </div>
+                          {% endif %}
+                        </div>
+                        <hr>
+                      </div>
+                      <!-- edit entery -->
+                      {% if item == data_edit %}
+                        <div class="collapse" id="editEntery{{entery.id}}">
+                          <div class="container">
+                            <form method="POST" action="{% url 'enteryEdit' entery.id %}">{% csrf_token %}
+          
+                              <div class="row rowAddEntery">
+                                <div class="col">
+                                    <input type="time" class="form-control input-sm" id="timeStart" name="timeStart" value="{{entery.timeStart|time:'H:i'}}">
+                                </div>
+          
+                                <div class="col">
+                                  <input type="time" class="form-control input-sm" id="timeEnd" name="timeEnd" value="{{entery.timeEnd|time:'H:i'}}">
+                                </div>
+          
+                                <div class="col">
+                                  <input type="number" step="0.5" min="0" class="form-control input-sm" name="hourForPay" value="{{entery.hourForPay}}">
+                                </div>
+          
+                                <div class="col">
+                                  <select class="form-select mr-sm-2 input-sm" name="contractor">
+                                    {% for contractor in contractors %}
+                                      <option value="{{contractor.id}}" {% if entery.contractor == contractor %} selected {% endif %}>{{contractor.name}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+          
+                                <div class="col">
+                                  <select class="form-select mr-sm-2 input-sm" name="configuration">
+                                    {% for configuration in configurations %}
+                                      <option value="{{configuration.id}}" {% if entery.configuration == configuration %} selected {% endif %}>{{configuration.name}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                              </div>
+          
+                              <div class="row rowAddEntery">
+                                <div class="col">
+                                  <textarea class="form-control input-sm" name="descriptionForClient" rows="4" style="resize: none">{{entery.descriptionForClient}}</textarea>
+                                </div>
+          
+                                <div class="col">
+                                  <textarea class="form-control input-sm" name="descriptionNotForClient" rows="4" style="resize: none">{{entery.descriptionNotForClient}}</textarea>
+                                </div>
+          
+                              </div>
+          
+                              <div class="row rowAddEntery ">
+                                <div class="d-flex justify-content-end">
+                                  <button type="submit" class="btn btn-outline-secondary btn-sm">Сохранить</button>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                          <hr>
+                        </div>
+                      {% endif %}
+                    <!-- end edit entery -->
+                    {% endfor %}
+
+
+
+                  </div>
+                </div>
+              {% if item != data_edit and not 'detail' in request.path %}</div> {% endif %}
+              <!-- end all entery -->
+            </div>
+          {% endfor %}
+
+
+        {% endblock %}
 
         </main>
       </div>
     </div>
     
     
-        <script src="/docs/5.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-    
-          <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="dashboard.js"></script>
-      
-    
+    <script src="/docs/5.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="dashboard.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
     </body>
-<!-- <body>
-
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-        <div class="container-fluid">
-
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'base' %}">База</a>
-              </li>
-
-
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'company' %}">Компании</a>
-              </li>
-
-
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'configuration' %}">Конфигурация</a>
-              </li>
-
-
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'contractor' %}">Контрагент</a>
-              </li>
-
-
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'staff' %}">Персонал</a>
-              </li>
-
-            </ul>
-
-            <ul class="d-flex" style="margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="/accounts/logout/">Выход</a>
-                </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-
-
-
-        <h1>Base html</h1>
-        {% for item in data %}
-            <a href="entery/{{item.id}}"><p>{{item}}</p></a>
-        {% endfor %}
-
-</body> -->
 </html>

@@ -1,31 +1,115 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Create new contractor</h1>
-    <div class="container">
-        <form method="POST" action="{% url 'contractorCreate' %}">
-            {% csrf_token %}
-            <p>
-                <label>Введите название организации</label><br>
-                <input type="text" name="name" />
-            </p>
-            <p>
-                <label>КОД</label><br>
-                <input type="text" name="cod" />
-            </p>
-            <p>
-                <label>ИНН</label><br>
-                <input type="text" name="inn" />
-            </p>
-            <p>
-                <label>КПП</label><br>
-                <input type="text" name="kpp" />
-            </p>
-            <input type="submit" value="Создать" >
-        </form>
+
+    <div class="conteiner mt-2">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="row-cols-1">
+                    <div class="col card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Создать контрагента
+                            </h5>
+                            <form method="POST" action="{% url 'contractorCreate' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <input class="form-control input-sm" type="text" name="name" placeholder="Наименование" required>
+                                    <div class="form-text">Максимальное количество символов 100 тип char</div>
+                                </div>
+    
+                                <div class="mb-3">
+                                    <input class="form-control input-sm" type="text" name="cod" placeholder="Код" required>
+                                    <div class="form-text">Максимальное количество символов 10 тип int</div>
+                                </div>
+    
+                                <div class="mb-3">
+                                    <input class="form-control input-sm" type="text" name="inn" placeholder="ИНН" required>
+                                    <div class="form-text">Максимальное количество символов 12 тип int</div>
+                                </div>
+    
+                                <div class="mb-3">
+                                    <input class="form-control input-sm" type="text" name="kpp" placeholder="КПП" required>
+                                    <div class="form-text">Максимальное количество символов 9 тип int</div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit">Создать</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="col accordion" role="tablist" aria-multiselectable="true">
+                        {% for item in contractors %}
+                            <div class="collapse" id="contractorEdit{{item.id}}">
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            Измененить контрагента
+                                        </h5>
+                                        <form method="POST" action="{% url 'contractorEdit' item.id%}">
+                                            {% csrf_token %}
+                                            <div class="mb-3">
+                                                <input class="form-control input-sm" type="text" name="name" value="{{item.name}}" placeholder="Наименование" required>
+                                                <div class="form-text">Максимальное количество символов 100 тип char</div>
+                                            </div>
+                
+                                            <div class="mb-3">
+                                                <input class="form-control input-sm" type="text" name="cod" value="{{item.cod}}" placeholder="Код" required>
+                                                <div class="form-text">Максимальное количество символов 10 тип int</div>
+                                            </div>
+                
+                                            <div class="mb-3">
+                                                <input class="form-control input-sm" type="text" name="inn" value="{{item.inn}}" placeholder="ИНН" required>
+                                                <div class="form-text">Максимальное количество символов 12 тип int</div>
+                                            </div>
+                
+                                            <div class="mb-3">
+                                                <input class="form-control input-sm" type="text" name="kpp" value="{{item.kpp}}" placeholder="КПП" required>
+                                                <div class="form-text">Максимальное количество символов 9 тип int</div>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-end">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="submit">Сохранть</button>
+                                                    <button data-parent="#accordion" class="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#contractorEdit{{item.id}}" aria-controls="contractorEdit{{item.id}}" aria-expanded="false" aria-label="Toggle navigation">
+                                                        Закрыть
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for item in contractors %}
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header bg-white">{{item.name}}</div>
+                                <div class="card-body">
+                                    <p class="mb-3"><span class="text-secondary card-help-name">ИНН: </span>{{item.inn}}</p>
+                                    <p class="mb-3"><span class="text-secondary card-help-name">КОД: </span>{{item.cod}}</p>
+                                    <p class="mb-3"><span class="text-secondary card-help-name">КПП: </span>{{item.kpp}}</p>                               
+                                </div>
+                                <div class="card-footer bg-white d-flex justify-content-center">
+                                    <div class="btn-group">
+                                        <button data-parent="#accordion" class="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#contractorEdit{{item.id}}" aria-controls="contractorEdit{{item.id}}" aria-expanded="false" aria-label="Toggle navigation">
+                                            Изменить
+                                        </button>
+                                        <a href="{% url 'contractorDelete' item.id %}" class="btn btn-sm btn-outline-secondary">Удалить</a>
+                                    </div>
+                                </div>
+                            </div>  
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-    <h2>Contractors</h2>
-    {% for contractor in contractors %}
-        <p>{{contractor}} <a href="{% url 'contractorEdit' contractor.id %}">Изменить</a> | <a href="{% url 'contractorDelete' contractor.id %}">Удалить</a></p>
-    {% endfor %}
 {% endblock %}

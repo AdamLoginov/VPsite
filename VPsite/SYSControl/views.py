@@ -1,3 +1,6 @@
+import datetime
+from datetime import timedelta
+
 from urllib import request
 from django.views.generic import View
 from django.shortcuts import render, redirect
@@ -8,6 +11,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import  (
+    EnteryDataBase,
     HeadDataBase, 
     Company,
     Сontractor,
@@ -16,16 +20,181 @@ from .models import  (
 
 User = get_user_model()
 
+def error_page(request):
+    return render(request,'errorPage.html',{})
+
 class BaseView(LoginRequiredMixin, View):
-
     def get(self, request):
-
         if request.user.is_superuser:
-            data = HeadDataBase.objects.all()
+            data = HeadDataBase.objects.all().order_by('-id')
         else:
-            data = HeadDataBase.objects.filter(user = request.user)
+            data = HeadDataBase.objects.filter(user = request.user).order_by('-id')
 
-        return render(request,'base.html', {'data': data})
+        try:
+            if list(request.user.HeadDataBase_key.all())[-1].date == datetime.date.today():
+                data_edit = list(request.user.HeadDataBase_key.all())[-1]
+            else:
+                data_edit = ''
+        except IndexError:
+            data_edit = ''
+
+        date = datetime.date.today()
+        users = User.objects.all()
+        company = Company.objects.all()
+        contractors = Сontractor.objects.all()
+        configurations = Сonfiguration.objects.all()
+        context = {
+            'data': data,
+            'date': date,
+            'data_edit':data_edit,
+            'user': request.user.username,
+            'users': users,
+            'company': company,
+            'contractors': contractors,
+            'configurations':configurations
+        }
+
+        return render(request,'base.html', context)
+
+    def detailView(request, id):
+        if request.user.is_superuser:
+            data_lastChage = HeadDataBase.objects.all().order_by('-id')[:5]
+            data = HeadDataBase.objects.get(id=id)
+        else:
+            data = HeadDataBase.objects.get(id=id).filter(user = request.user)
+            data_lastChage = []
+
+        if list(request.user.HeadDataBase_key.all())[-1].date == datetime.date.today():
+            data_edit = list(request.user.HeadDataBase_key.all())[-1]
+        else:
+            data_edit = ''
+
+        date = datetime.date.today()
+        users = User.objects.all()
+        company = Company.objects.all()
+        contractors = Сontractor.objects.all()
+        configurations = Сonfiguration.objects.all()
+        context = {
+            'data': [data],
+            'date': date,
+            'data_edit':data_edit,
+            'data_lastChange': data_lastChage,
+            'user': request.user.username,
+            'users': users,
+            'company': company,
+            'contractors': contractors,
+            'configurations':configurations
+        }
+
+        return render(request,'base.html', context)
+
+    def create(request):
+        if request.method == 'POST':
+            model = HeadDataBase()
+            model.company = Company.objects.get(id=request.POST.get('company')) 
+            model.user = request.user
+            model.date = datetime.date.today()
+            model.distance = request.POST.get('dictance') == 'on'
+            model.save()
+            
+        return HttpResponseRedirect('/')
+
+    def edit(request, id):
+        if request.method == 'POST':
+            model = HeadDataBase.objects.get(id = id)
+            if model.date == datetime.date.today():
+                model.company = Company.objects.get(id=request.POST.get('company'))
+                model.distance = request.POST.get('dictance') == 'on'
+                model.save()
+        
+        return HttpResponseRedirect('/')
+
+    def delete(request, id):
+        model = HeadDataBase.objects.get(id=id)
+        if model.date == datetime.date.today():
+            model.delete()
+        return HttpResponseRedirect('/')
+        
+
+    def createEntery(request, id):
+        if request.method == 'POST':
+            timeStart = request.POST.get('timeStart').split(':')
+            timeEnd = request.POST.get('timeEnd').split(':')
+
+            model = EnteryDataBase()
+            model.head = HeadDataBase.objects.get(id=id)
+            model.timeStart = datetime.time(int(timeStart[0]), int(timeStart[1]))
+            model.timeEnd = datetime.time(int(timeEnd[0]), int(timeEnd[1]))
+            model.hourForPay = request.POST.get('hourForPay')     
+            model.contractor = Сontractor.objects.get(id=request.POST.get('contractor'))  
+            model.configuration = Сonfiguration.objects.get(id=request.POST.get('configuration'))
+            model.descriptionForClient = request.POST.get('descriptionForClient')
+            model.descriptionNotForClient = request.POST.get('descriptionNotForClient')
+
+            model.save()
+
+        return HttpResponseRedirect('/')
+    
+    def editEntery(request, id):
+        if request.method == 'POST':
+            
+            timeStart = request.POST.get('timeStart').split(':')
+            timeEnd = request.POST.get('timeEnd').split(':')
+
+            model = EnteryDataBase.objects.get(id=id)
+            if model.head.date == datetime.date.today():
+                model.timeStart = datetime.time(int(timeStart[0]), int(timeStart[1]))
+                model.timeEnd = datetime.time(int(timeEnd[0]), int(timeEnd[1]))
+                model.hourForPay = request.POST.get('hourForPay')     
+                model.contractor = Сontractor.objects.get(id=request.POST.get('contractor'))  
+                model.configuration = Сonfiguration.objects.get(id=request.POST.get('configuration'))
+                model.descriptionForClient = request.POST.get('descriptionForClient')
+                model.descriptionNotForClient = request.POST.get('descriptionNotForClient')
+
+                model.save()
+        
+        return HttpResponseRedirect('/') 
+    
+    def deleteEntery(request, id):
+        model = EnteryDataBase.objects.get(id=id)
+        if model.head.date == datetime.date.today():
+            model.delete()
+        return HttpResponseRedirect('/')
+
+    def filter(request):
+        if request.method == 'POST':
+            model = HeadDataBase.objects.all()
+            postUser = request.POST.get('user')
+            postCompany = request.POST.get('company')
+            postDate = request.POST.get('date')
+
+            if postUser != 'null':
+                model = model.filter(user = User.objects.get(id = postUser))
+            if postCompany != 'null':
+                model = model.filter(company = Company.objects.get(id = postCompany))
+            if postDate !='null':
+                model = model.filter(date__gte=datetime.date.today() - timedelta(days=int(request.POST.get('date'))))
+
+            date = datetime.date.today()
+            date_today = datetime.date.today()
+            users = User.objects.all()
+            company = Company.objects.all()
+            contractors = Сontractor.objects.all()
+            configurations = Сonfiguration.objects.all()
+            context = {
+                'data': model.order_by('-id'),
+                'date': date,
+                'dateToday': date_today,
+                'user': request.user.username,
+                'users': users,
+                'company': company,
+                'contractors': contractors,
+                'configurations':configurations
+            }
+
+            return render(request, 'base.html', context)
+
+        return HttpResponseRedirect('/')
 
 
 class CompanyView(LoginRequiredMixin, View):
@@ -33,9 +202,14 @@ class CompanyView(LoginRequiredMixin, View):
     def get(self, request):
         if request.user.is_superuser:
             company = Company.objects.all()
-            return render(request, 'company.html', {'company': company})
+            data = HeadDataBase.objects.all().order_by('-id')
+            context = {
+                'company': company,
+                'data': data
+            }
+            return render(request, 'company.html', context)
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
     
     def create(request):
         if request.user.is_superuser:
@@ -45,7 +219,7 @@ class CompanyView(LoginRequiredMixin, View):
                 model.save()
             return HttpResponseRedirect("/company")
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
     
     def edit(request, id):
         if request.user.is_superuser:
@@ -57,7 +231,7 @@ class CompanyView(LoginRequiredMixin, View):
             else:
                 return render(request, 'company_edit.html', {"company": model})
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
 
     def delete(request, id):
         if request.user.is_superuser:
@@ -65,16 +239,21 @@ class CompanyView(LoginRequiredMixin, View):
             model.delete()  
             return HttpResponseRedirect('/company')
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
 
 
 class СontractorView(LoginRequiredMixin, View):
     def get(self, request):
         if request.user.is_superuser:
             model = Сontractor.objects.all()
-            return render(request, 'contractor.html', {'contractors': model})
+            data = HeadDataBase.objects.all().order_by('-id')
+            context = {
+                'contractors': model,
+                'data': data
+            }
+            return render(request, 'contractor.html', context)
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
 
     def create(request):
         if request.user.is_superuser:
@@ -87,7 +266,7 @@ class СontractorView(LoginRequiredMixin, View):
                 model.save()
             return HttpResponseRedirect('/contractor')
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
     
     def edit(request, id):
         if request.user.is_superuser:
@@ -102,7 +281,7 @@ class СontractorView(LoginRequiredMixin, View):
             else:
                 return render(request, 'contractor_edit.html', {'contractor': model})
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
     
     def delete(request, id):
         if request.user.is_superuser:
@@ -110,7 +289,7 @@ class СontractorView(LoginRequiredMixin, View):
             model.delete()
             return HttpResponseRedirect('/contractor')
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
 
 
 class СonfigurationView(LoginRequiredMixin, View):
@@ -118,9 +297,14 @@ class СonfigurationView(LoginRequiredMixin, View):
     def get(self, request):
         if request.user.is_superuser:
             configuration = Сonfiguration.objects.all()
-            return render(request, 'configuration.html', {'configurations': configuration})
+            data = HeadDataBase.objects.all().order_by('-id')
+            context = {
+                'configurations': configuration,
+                'data': data
+            }
+            return render(request, 'configuration.html', context)
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
     
     def create(request):
         if request.user.is_superuser:
@@ -130,7 +314,7 @@ class СonfigurationView(LoginRequiredMixin, View):
                 model.save()
             return HttpResponseRedirect("/configuration")
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
     
     def edit(request, id):
         if request.user.is_superuser:
@@ -142,7 +326,7 @@ class СonfigurationView(LoginRequiredMixin, View):
             else:
                 return render(request, 'configuration_edit.html', {"configuration": model})
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
 
     def delete(request, id):
         if request.user.is_superuser:
@@ -150,23 +334,23 @@ class СonfigurationView(LoginRequiredMixin, View):
             model.delete()  
             return HttpResponseRedirect('/configuration')
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
 
 
 class StaffView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
-
-        form = UserCreationForm()
-        users = User.objects.all()
-
-
-        context = {
-            'users' : users,
-            'form': form,
-        }
-        
-        return render(request, 'staff.html', context)
+        if request.user.is_superuser:
+            users = User.objects.all()
+            data = HeadDataBase.objects.all().order_by('-id')
+            context = {
+                'data': data,
+                'users' : users,
+            }
+            
+            return render(request, 'staff.html', context)
+        else:
+            return HttpResponseRedirect('/errorPage')
 
     def create(request):
         if request.user.is_superuser:
@@ -180,48 +364,49 @@ class StaffView(LoginRequiredMixin, View):
                 model.save()
             return HttpResponseRedirect('/staff')
         else:
-            return HttpResponseRedirect('errorpage.html')
+            return HttpResponseRedirect('/errorPage')
 
-    def edit(request):
+    def detailView(request, id):
         if request.user.is_superuser:
-            if request.method == 'POST':
-                pass
-            else:
-                pass
+            model = User.objects.get(id=id)
+            data = HeadDataBase.objects.all().order_by('-id')
+            context = {
+                'user': model,
+                'data': data
+                }
+            return render(request, 'staff_detail.html', context)
         else:
-            return HttpResponseRedirect('errorpage.html')
+            return HttpResponseRedirect('/errorPage')
+
+    def edit(request,id):
+        if request.user.is_superuser:
+            model = User.objects.get(id = id)
+            if request.method == 'POST':
+                model.username = request.POST.get('username')
+                model.first_name = request.POST.get('nameFirst')
+                model.last_name = request.POST.get('nameLast')
+                model.email = request.POST.get('email')
+                model.save()
+            return HttpResponseRedirect('/staff/detail/'+str(id))
+            
+        else:
+            return HttpResponseRedirect('/errorPage')
 
     def changePassword(request, id):
         if request.user.is_superuser:
-            model = User.objects.get(id=id)
-            context = {
-                'user': model
-            }
-
             if request.method == 'POST':
-                password_1 = request.POST.get('password1')
-                password_2 = request.POST.get('password2')
-
-                if password_1 == password_2:
-                    model.set_password(password_1)
-                    model.save()
-                    context['message'] = 'Пароль успешно сменен'
-                else:
-                    context['message'] = 'Пароли не совподают'
-            
-            return render(request, 'password_change.html', context)
-                
+                model = User.objects.get(id=id)
+                model.set_password(request.POST.get('password'))
+                model.save()
+            return HttpResponseRedirect('/staff/detail/'+str(id))
         else:
-            return HttpResponseRedirect('errorPage.html')
+            return HttpResponseRedirect('/errorPage')
 
-class ProfileView(LoginRequiredMixin, View):
-    def get(self, request, name, *args, **kwargs):     
-        user = User.objects.get(username = name)
-
-        return render(request, 'profile.html', {'user': user})
-
-# class DataBaseDetailView(LoginRequiredMixin, View):
-#     def get(self, request, id, *args, **kwargs):
-#         entery = DataBase.objects.get(id=id)
-
-#         return render(request, 'entery.html', {'entery': entery})
+    def blockUser(request, id):
+        if request.user.is_superuser:
+            model = User.objects.get(id=id)
+            model.is_active = not model.is_active
+            model.save()  
+            return HttpResponseRedirect('/staff/detail/'+str(id))
+        else:
+            return HttpResponseRedirect('/errorPage')

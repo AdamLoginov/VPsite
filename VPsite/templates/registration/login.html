@@ -12,11 +12,11 @@
 <body>
 
   
-  <section class="vh-100" style="background-color: #508bfc;">
+  <section class="vh-100 bg-secondary" >
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-          <div class="card shadow-2-strong" style="border-radius: 1rem;">
+          <div class="card shadow-2-strong bg-light" style="border-radius: 1rem;">
             <div class="card-body p-5 text-center">
               {% if form.errors %}
               <p>Your username and password didn't match. Please try again.</p>
@@ -46,7 +46,7 @@
                 
                 
             
-                <input class="btn btn-primary btn-md btn-block" type="submit" value="Авториироваться" />
+                <input class="btn btn-sm btn-outline-secondary btn-md btn-block" type="submit" value="Авториироваться" />
                 <input type="hidden" name="next" value="{{ next }}" />
               </form>
 
