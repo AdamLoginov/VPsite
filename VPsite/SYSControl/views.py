@@ -91,9 +91,13 @@ class BaseView(LoginRequiredMixin, View):
     def create(request):
         if request.method == 'POST':
             model = HeadDataBase()
+            if request.user.is_superuser:
+                model.user = User.objects.get(id=request.POST.get('user'))
+                model.date = datetime.datetime.strptime(request.POST.get('date'), '%Y-%m-%d').date()
+            else:
+                model.user = request.user
+                model.date = datetime.date.today()
             model.company = Company.objects.get(id=request.POST.get('company')) 
-            model.user = request.user
-            model.date = datetime.date.today()
             model.distance = request.POST.get('dictance') == 'on'
             model.save()
             
@@ -102,9 +106,15 @@ class BaseView(LoginRequiredMixin, View):
     def edit(request, id):
         if request.method == 'POST':
             model = HeadDataBase.objects.get(id = id)
-            if model.date == datetime.date.today():
+            if not model.chek or request.user.is_superuser:
+                if request.user.is_superuser:
+                    model.user = User.objects.get(id=request.POST.get('user'))
+                    model.date = datetime.datetime.strptime(request.POST.get('date'), '%Y-%m-%d').date()
+                
+                model.comment = request.POST.get('comment')
                 model.company = Company.objects.get(id=request.POST.get('company'))
                 model.distance = request.POST.get('dictance') == 'on'
+                model.chek = request.POST.get('chek') == 'on'
                 model.save()
         
         return HttpResponseRedirect('/')
@@ -166,13 +176,22 @@ class BaseView(LoginRequiredMixin, View):
             model = HeadDataBase.objects.all()
             postUser = request.POST.get('user')
             postCompany = request.POST.get('company')
-            postDate = request.POST.get('date')
+            postDate_start = request.POST.get('date_start')
+            postDate_end = request.POST.get('date_end')
+
+            if postDate_start == '': postDate_start = '1900-1-1'
+            if postDate_end == '': postDate_end = '2100-1-1'
+
+            model = model.filter(date__gte=datetime.datetime.strptime(postDate_start, '%Y-%m-%d').date())
+            model = model.filter(date__lte=datetime.datetime.strptime(postDate_end, '%Y-%m-%d').date())
+
+
 
             if postUser != 'null':
                 model = model.filter(user = User.objects.get(id = postUser))
             if postCompany != 'null':
                 model = model.filter(company = Company.objects.get(id = postCompany))
-            if postDate !='null':
+            
                 model = model.filter(date__gte=datetime.date.today() - timedelta(days=int(request.POST.get('date'))))
 
             date = datetime.date.today()

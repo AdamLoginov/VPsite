@@ -35,6 +35,8 @@ class HeadDataBase(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь', related_name='HeadDataBase_key', on_delete=models.PROTECT) 
     date = models.DateField(auto_now=False, auto_now_add=False, verbose_name='Дата создания')
     distance = models.BooleanField(verbose_name='Удаленно')
+    chek = models.BooleanField(verbose_name='Проверено', default=False)
+    comment = models.CharField(max_length=50, verbose_name='Комментарий', default="")
 
     def __str__(self):
         return f'{self.user} дата: {self.date}'

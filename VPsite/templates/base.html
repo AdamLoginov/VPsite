@@ -12,20 +12,19 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 
-    <title>Document</title>
+    <title>123Soft.site</title>
 </head>
 <body class="bg-light">
     
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">Company name</a>
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="{% url 'base' %}">123Soft.site </a>
       <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Поиск" aria-label="">
+      <div class="w-100 bg-dark"></div>
       <div class="navbar-nav">
         <div class="nav-item text-nowrap">
-          <a class="nav-link px-3" href="/accounts/logout/">Выход
-          </a>
+          <a class="nav-link px-3" href="/accounts/logout/">Выход</a>
         </div>
       </div>
     </header>
@@ -81,7 +80,7 @@
             <ul class="nav flex-column mb-2">
                 <!-- вносить последние изменения в базе данных  -->
               <li class="nav-item">
-                {% if 'detail' in request.path or 'filter' in request.path %}
+                {% if 'detail' in request.path or 'Ffilter' in request.path %}
                   {% for item in data_lastChange %}
                     <a class="nav-link" href="{% url 'baseDetail' item.id %}">
                       <div class="d-flex justify-content-between">
@@ -141,25 +140,27 @@
                 <div class="d-flex">
 
                   <select class="form-select input-sm mr-2" id ="select-company" name="company">
-                    <option value="null" selected hidden>Компании</option>
+                    <option value="null" selected>Все компании</option>
                     {% for item in company %}
                       <option value="{{item.id}}">{{item.name}}</option>
                     {% endfor %}
                   </select>
 
                   <select class="form-select input-sm mr-2" name="user">
-                    <option value="null" selected hidden>Пользователи</option>
-                    {% for item in users %}
-                    <option value="{{item.id}}">{{item.username}}</option>
-                    {% endfor %}
+                    {% if request.user.is_superuser %}
+                      <option value="null" selected>Все пользователи</option>
+                      {% for item in users %}
+                      <option value="{{item.id}}">{{item.username}}</option>
+                      {% endfor %}
+                    {% else %}
+                      <option value="{{request.user.id}}" selected>{{request.user.username}}</option>
+                    {% endif %}
                   </select>
 
-                  <select class="form-select input-sm mr-2" name="date">
-                    <option value="7">Неделя</option>
-                    <option value="30">Месяц</option>
-                    <option value="180">6 Месяцев</option>
-                    <option value="null" selected>Все время</option>
-                  </select>
+                  <div class="d-flex">
+                    <input type="date" class="form-control input-sm mr-2" id="date_start" name="date_start">
+                    <input type="date" class="form-control input-sm mr-2" id="date_end" name="date_end">
+                  </div>
 
                   <button type="submit" class="btn btn-outline-secondary btn-sm">Применить</button>
                 </div>
@@ -172,17 +173,30 @@
             <div class="card card-body">
               <form method="POST" action="{% url 'headCreate' %}">
                 {% csrf_token %}
-                <div class="row align-items-center">
+                <div class="row align-items-center justify-content-center">
 
-                  <div class="col-sm-3 my-1">
-                    <input type="text" class="form-control input-sm"  value = "{{date}}" disabled>
+                  <div class="col-sm-2 my-1">
+                    {% if request.user.is_superuser %}
+                      <input type="date" class="form-control input-sm" value="{{date|date:'Y-m-d'}}" name="date">
+                    {% else %}
+                      <input type="text" class="form-control input-sm"  value = "{{date|date:'d.m.Y'}}" disabled>
+                    {% endif %}
+                  </div>
+                  
+
+                  <div class="col-sm-2 my-1">
+                    {% if request.user.is_superuser %}
+                      <select class="form-select mr-sm-2 input-sm" name="user">
+                        {% for user in users %}
+                          <option value="{{user.id}}" {% if user is request.user %}selected{% endif %}>{{user.username}}</option>
+                        {% endfor %}
+                      </select>
+                    {% else %}
+                      <input type="text" class="form-control input-sm"  value="{{user}}" disabled>
+                    {% endif %}
                   </div>
 
-                  <div class="col-sm-3 my-1">
-                    <input type="text" class="form-control input-sm"  value="{{user}}" disabled>
-                  </div>
-
-                  <div class="col-sm-3 my-1">
+                  <div class="col-sm-2 my-1">
                     <select class="form-select mr-sm-2 input-sm" name="company">
                       {% for item in company %}
                         {% if item.first %}
@@ -194,13 +208,17 @@
                     </select>
                   </div>
 
+                  <div class="col-sm-3 my-1">
+                    <input class="form-control input-sm" type="text" name="comment" placeholder="Комментарий">
+                  </div>
+
                   <div class="col-auto my-1">
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" name="dictance">
                       <label class="form-check-label" for="autoSizingCheck2"> Удаленно </label>
                     </div>
                   </div>
-                  <div class="col-auto my-1">
+                  <div class="col-auto my-1 text-end">
                     <button type="submit" class="btn btn-outline-secondary btn-sm">Сохранить</button>
                   </div>
                 </div>
@@ -213,27 +231,40 @@
           {% for item in data %}
             <div class="my-3 p-3 bg-body rounded shadow-sm">
               <div class="row border-bottom base-head pb-1 align-items-center">
-                <div class="col-2">@{{item.user}}</div>
-                <div class="col-2">{{item.date|date:"d.m.Y"}}</div>
-                <div class="col-2">{{item.company}}</div>
-                <div class="col-2">{% if item.distance %}Удаленно{% else %}Очно{% endif %}</div>
-                <div class="col-4 text-end">
-                  {% if item == data_edit %}
-                    <div class="btn-group me-3 ">
+                <div class="col-1">@{{item.user}}</div>
+                <div class="col-1 p-0 text-center">{{item.date|date:"d.m.Y"}}</div>
+                <div class="col-2 text-center p-0">{{item.company}}</div>
+                <div class="col-1 p-0 text-center">{% if item.distance %}Удаленно{% else %}Очно{% endif %}</div>
+                <div class="col-1 text-center p-0">
+                  {% if item.chek %}
+                    <svg xmlns="http://www.w3.org/2000/svg" style="color:green" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                    </svg>
+                  {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" style="color:brown" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                  {% endif %}
+                </div>
+                <div class="col-2 text-center p-0">{{item.comment}}</div>
+                <div class="col-4 text-end p-0">
+                  
+                  <div class="btn-group me-3 ">
+                    {% if item != data_edit %}
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#watch{{item.id}}" id="btn-onClick" onclick="this.classList.toggle('active')" ></button>
+                    {% endif %}
+                    {% if not item.chek or request.user.is_superuser %}
                       <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#createEntery{{item.id}}">Добавить</button>
                       <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#editHeadBase{{item.id}}">Изменить</button>
                       <a href="{% url 'headDelete' item.id %}" type="button" class="btn btn-sm btn-outline-secondary">Удалить</a>
-                    </div>
-                  {% elif not 'detail' in request.path %}
-                    <div class="btn-group me-3 ">
-                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#watch{{item.id}}" id="btn-onClick" onclick="this.classList.toggle('active')" >
-                      </button>
-                    </div>  
-                  {% endif %}
+                    {% endif %}
+                  </div>
                 </div>
               </div>
               <!-- edit headBase -->
-              {% if item == data_edit %}
+              {% if not item.chek or request.user.is_superuser %}
                 <div class="collapse" id="editHeadBase{{item.id}}">
                   <div class="container">
 
@@ -241,16 +272,28 @@
                       {% csrf_token %}
                       <div class="row align-items-center">
       
-                        <div class="col-sm-3 my-1">
-                          <input type="text" class="form-control input-sm"  value = "{{item.user}}" disabled>
+                        <div class="col-sm-2 my-1">
+                          {% if request.user.is_superuser %}
+                            <select class="form-select input-sm" name="user" required>
+                              {% for user in users %}
+                                <option value="{{user.id}}" {% if item.user is user %}selected{% endif %}>{{user.username}}</option>
+                              {% endfor %}
+                            </select>
+                          {% else %}
+                            <input type="text" class="form-control input-sm"  value = "{{item.user}}" disabled>
+                          {% endif %}  
                         </div>
       
-                        <div class="col-sm-3 my-1">
-                          <input type="text" class="form-control input-sm"  value="{{item.date}}" disabled>
+                        <div class="col-sm-2 my-1">
+                          {% if request.user.is_superuser %}
+                            <input type="date" class="form-control input-sm" value="{{date|date:'Y-m-d'}}" name="date" required>
+                          {% else %}
+                            <input type="text" class="form-control input-sm"  value="{{item.date|date:'Y-m-d'}}" disabled>
+                          {% endif %}
                         </div>
       
-                        <div class="col-sm-3 my-1">
-                          <select class="form-select mr-sm-2 input-sm" name="company">
+                        <div class="col-sm-2 my-1">
+                          <select class="form-select mr-sm-2 input-sm" name="company" required>
                             {% for itemComp in company %}
                               {% if itemComp == item.company %}
                                 <option value="{{itemComp.id}}" selected>{{itemComp.name}}</option>
@@ -260,25 +303,34 @@
                             {% endfor %}
                           </select>
                         </div>
+                        <div class="col-sm-3 my-1">
+                          <input type="text" class="form-control input-sm" name="comment" value="{{item.comment}}" placeholder="Комментарий">
+                        </div>
       
                         <div class="col-auto my-1">
                           <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="dictance" {% if item.distance %}checked{% endif %}>
                             <label class="form-check-label" for="autoSizingCheck2"> Удаленно </label>
                           </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="chek" {% if item.chek %}checked{% endif %}>
+                            <label class="form-check-label" for="autoSizingCheck2"> Проверено </label>
+                          </div>
                         </div>
                         <div class="col-auto my-1">
+
                           <button type="submit" class="btn btn-outline-secondary btn-sm">Сохранить</button>
                         </div>
                       </div>
                     </form>
+                    <hr>
                   </div>
                 </div>
               {% endif %}
               <!-- end edit headBase -->
 
               <!-- create entery -->
-              {% if item == data_edit %}
+              {% if not item.chek or request.user.is_superuser %}
                 <div class="collapse" id="createEntery{{item.id}}">
                   <div class="{% if request.user.is_superuser %}container{% else %} mr-5 ml-5 {% endif %}">
                     <form method="POST" action="{% url 'enteryCreate' item.id %}">{% csrf_token %}
@@ -335,6 +387,7 @@
                       </div>
                     </form>
                   </div>
+                  <hr>
                 </div>
               {% endif %}
               <!-- end create entery -->
@@ -386,7 +439,7 @@
                         </div>
 
                         <div class="col-md-1 my-auto">
-                          {% if item == data_edit %}
+                          {% if not item.chek or request.user.is_superuser %}
                             <div class="btn-group-vertical me-2">
                               <button type="button" class="btn btn-sm btn-outline-secondary btn-sbn" data-bs-toggle="collapse" data-bs-target="#editEntery{{entery.id}}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
